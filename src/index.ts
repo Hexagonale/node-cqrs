@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import cors from 'cors';
 import express from 'express';
-import { serverConfigFactory } from './config';
+import { configFactory } from './config.factory';
 import pino from 'pino';
 import { MongoClient } from 'mongodb';
 
@@ -14,11 +14,11 @@ const main = async () => {
 		})
 	);
 
-	const config = serverConfigFactory();
+	const config = configFactory();
 
 	const mongo = await MongoClient.connect(config.mongoUrl);
 
-	logger.info('Connected to MongoDB');
+	logger.info(`Connected to MongoDB on "${config.mongoUrl}"`);
 
 	const app = express();
 	app.use(express.json());
