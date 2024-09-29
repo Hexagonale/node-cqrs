@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import { configFactory } from './config.factory';
 import { MongoClient } from 'mongodb';
+import { contextInjector } from './middleware';
 import { logger } from './logger';
 
 const main = async () => {
@@ -14,6 +15,14 @@ const main = async () => {
 	const app = express();
 	app.use(express.json());
 	app.use(cors());
+	app.use(
+		contextInjector({
+			config,
+			mongoClient,
+		})
+	);
+
+	logger.info('App configured, starting server');
 
 	app.listen(config.port, () => {
 		logger.info(`Server listening on port ${config.port}`);
