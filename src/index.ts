@@ -6,7 +6,7 @@ import { Db, MongoClient } from 'mongodb';
 
 import { configFactory } from './config.factory';
 import { logger } from './logger';
-import { contextInjector } from './middleware';
+import { contextInjector, errorHandler } from './middleware';
 import { OrdersRepository, ProductsRepository } from './repositories';
 import { setupRoutes } from './setup_routes';
 
@@ -49,6 +49,7 @@ const main = async () => {
 		})
 	);
 	setupRoutes(app);
+	app.use(errorHandler());
 
 	logger.info('App configured, starting server');
 
