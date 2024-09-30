@@ -1,3 +1,3 @@
-export interface Query<T = any> {
+export interface Query<T = unknown> {
 	readonly result?: T;
 }
