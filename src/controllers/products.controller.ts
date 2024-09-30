@@ -106,7 +106,10 @@ export const productsController = {
 				}
 
 				if (error instanceof SellProductNotEnoughStockError) {
-					throw new HttpError(400, 'Not enough stock');
+					throw new HttpError(400, 'Not enough stock', {
+						wanted: error.wanted,
+						available: error.available,
+					});
 				}
 
 				throw error;
