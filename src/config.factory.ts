@@ -1,7 +1,7 @@
 import z from 'zod';
 
 const configSchema = z.object({
-	port: z.coerce.number().min(1).max(65535),
+	port: z.coerce.number().min(1).max(65535).default(80),
 	mongoUrl: z.string().url(),
 	mongoDb: z.string(),
 	allowedOrigin: z.string(),

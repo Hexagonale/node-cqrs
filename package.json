@@ -1,10 +1,11 @@
 {
-  "name": "coffee-mug",
+  "name": "node-cqrs",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "start": "node build/index.js",
+    "build:watch": "tsc --watch",
     "lint": "eslint src"
   },
   "keywords": [],
