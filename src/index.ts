@@ -4,7 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import { Db, MongoClient } from 'mongodb';
 
-import { configFactory } from './config.factory';
+import { Config, configFactory } from './config.factory';
 import { logger } from './logger';
 import { contextInjector, errorHandler } from './middleware';
 import { OrdersRepository, ProductsRepository } from './repositories';
@@ -29,6 +29,28 @@ const initRepositories = async (mongoClient: MongoClient, database: Db) => {
 	await session.endSession();
 };
 
+const appFactory = async (config: Config, mongoClient: MongoClient, database: Db) => {
+	const app = express();
+	app.use(express.json());
+	app.use(
+		cors({
+			origin: config.allowedOrigin,
+		})
+	);
+	app.use(
+		contextInjector({
+			mongoClient,
+			database,
+		})
+	);
+
+	setupRoutes(app);
+
+	app.use(errorHandler());
+
+	return app;
+};
+
 const main = async () => {
 	const config = configFactory();
 
@@ -39,18 +61,7 @@ const main = async () => {
 	await initRepositories(mongoClient, database);
 	logger.info('Repositories initialized');
 
-	const app = express();
-	app.use(express.json());
-	app.use(cors());
-	app.use(
-		contextInjector({
-			mongoClient,
-			database,
-		})
-	);
-	setupRoutes(app);
-	app.use(errorHandler());
-
+	const app = await appFactory(config, mongoClient, database);
 	logger.info('App configured, starting server');
 
 	app.listen(config.port, () => {

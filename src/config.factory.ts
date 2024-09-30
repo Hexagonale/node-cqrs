@@ -4,6 +4,7 @@ const configSchema = z.object({
 	port: z.coerce.number().min(1).max(65535),
 	mongoUrl: z.string().url(),
 	mongoDb: z.string(),
+	allowedOrigin: z.string(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -15,6 +16,7 @@ export const configFactory = (): Config => {
 		port: process.env.PORT,
 		mongoUrl: process.env.MONGO_URL,
 		mongoDb: process.env.MONGO_DB,
+		allowedOrigin: process.env.ALLOWED_ORIGIN,
 	};
 
 	return configSchema.parse(config);
