@@ -1,20 +1,68 @@
-import { MongoClient } from 'mongodb';
 import { RequestHandler } from 'express';
-import { RequestContext } from '../types';
+import { Db, MongoClient } from 'mongodb';
+
 import { InMemoryCommandBus, InMemoryQueryBus } from '../buses';
-import { Config } from '../config.factory';
+import {
+	CreateOrderCommandHandler,
+	CreateProductCommandHandler,
+	RestockProductCommandHandler,
+	SellProductCommandHandler,
+} from '../commands';
+import { GetOrdersQueryHandler, GetProductsQueryHandler } from '../queries';
+import { OrdersRepository, ProductsRepository } from '../repositories';
+import { RequestContext } from '../types';
 
 interface Dependencies {
-	config: Config;
 	mongoClient: MongoClient;
+	database: Db;
 }
 
-const contextFactory = async ({ config, mongoClient }: Dependencies): Promise<RequestContext> => {
-	const database = mongoClient.db(config.mongoDb);
+const contextFactory = async ({ mongoClient, database }: Dependencies): Promise<RequestContext> => {
 	const session = mongoClient.startSession();
 
+	const productsRepository = new ProductsRepository({
+		database,
+		session,
+	});
+	const ordersRepository = new OrdersRepository({
+		database,
+		session,
+	});
+
 	const commandBus = new InMemoryCommandBus();
+	commandBus.registerHandler(
+		new CreateProductCommandHandler({
+			productsRepository,
+		})
+	);
+	commandBus.registerHandler(
+		new RestockProductCommandHandler({
+			productsRepository,
+		})
+	);
+	commandBus.registerHandler(
+		new SellProductCommandHandler({
+			productsRepository,
+		})
+	);
+	commandBus.registerHandler(
+		new CreateOrderCommandHandler({
+			ordersRepository,
+			productsRepository,
+		})
+	);
+
 	const queryBus = new InMemoryQueryBus();
+	queryBus.registerHandler(
+		new GetProductsQueryHandler({
+			productsRepository,
+		})
+	);
+	queryBus.registerHandler(
+		new GetOrdersQueryHandler({
+			ordersRepository,
+		})
+	);
 
 	return {
 		mongoSession: session,
