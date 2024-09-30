@@ -5,6 +5,7 @@ const configSchema = z.object({
 	mongoUrl: z.string().url(),
 	mongoDb: z.string(),
 	allowedOrigin: z.string(),
+	openApiSpecPath: z.string().optional(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -17,6 +18,7 @@ export const configFactory = (): Config => {
 		mongoUrl: process.env.MONGO_URL,
 		mongoDb: process.env.MONGO_DB,
 		allowedOrigin: process.env.ALLOWED_ORIGIN,
+		openApiSpecPath: process.env.OPEN_API_SPEC_PATH,
 	};
 
 	return configSchema.parse(config);

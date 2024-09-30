@@ -1,8 +1,12 @@
 import 'source-map-support/register';
 
+import fs from 'node:fs';
+
 import cors from 'cors';
 import express from 'express';
 import { Db, MongoClient } from 'mongodb';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'yaml';
 
 import { Config, configFactory } from './config.factory';
 import { logger } from './logger';
@@ -45,6 +49,14 @@ const appFactory = async (config: Config, mongoClient: MongoClient, database: Db
 	);
 
 	setupRoutes(app);
+	if (config.openApiSpecPath) {
+		const openApiSpecFile = fs.readFileSync(config.openApiSpecPath, 'utf-8');
+		const openApiSpec = yaml.parse(openApiSpecFile);
+
+		app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+	} else {
+		logger.warn('OpenAPI spec path not provided, skipping OpenAPI documentation setup');
+	}
 
 	app.use(errorHandler());
 

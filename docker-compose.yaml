@@ -36,6 +36,9 @@ services:
         - action: sync
           path: build
           target: /usr/src/app/build
+        - action: sync
+          path: openapi.yaml
+          target: /usr/src/app/openapi.yaml
         - action: rebuild
           path: package.json
           target: /usr/src/app/src/package.json
