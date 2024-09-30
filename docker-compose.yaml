@@ -1,4 +1,4 @@
-name: coffe-mug
+name: node-cqrs
 
 services:
   mongodb:
@@ -36,9 +36,6 @@ services:
         - action: sync
           path: build
           target: /usr/src/app/build
-        - action: sync
-          path: openapi.yaml
-          target: /usr/src/app/openapi.yaml
         - action: rebuild
           path: package.json
           target: /usr/src/app/src/package.json
@@ -48,6 +45,8 @@ services:
       - build/index.js
     mem_limit: 256M
     cpu_count: 1
+    volumes:
+      - ./openapi.yaml:/usr/src/app/openapi.yaml:ro
     env_file:
       - .env
     depends_on:

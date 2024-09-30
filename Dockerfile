@@ -12,7 +12,6 @@ WORKDIR /usr/src/app
 COPY --from=install /usr/src/app /usr/src/app
 COPY tsconfig.json ./
 COPY src ./src
-COPY openapi.yaml ./
 
 RUN npm run build
 
