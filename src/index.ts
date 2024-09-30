@@ -8,6 +8,7 @@ import { configFactory } from './config.factory';
 import { logger } from './logger';
 import { contextInjector } from './middleware';
 import { OrdersRepository, ProductsRepository } from './repositories';
+import { setupRoutes } from './setup_routes';
 
 const initRepositories = async (mongoClient: MongoClient, database: Db) => {
 	const session = mongoClient.startSession();
@@ -47,6 +48,7 @@ const main = async () => {
 			database,
 		})
 	);
+	setupRoutes(app);
 
 	logger.info('App configured, starting server');
 
