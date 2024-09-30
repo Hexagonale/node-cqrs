@@ -1,4 +1,5 @@
 import { ClientSession } from 'mongodb';
+
 import { CommandBus, QueryBus } from '../interfaces';
 
 export interface RequestContext {
