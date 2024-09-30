@@ -1,7 +1,14 @@
 import { Request, Response } from 'express';
 
-import { CreateProductCommand, RestockProductCommand, RestockProductProductNotFoundError } from '../commands';
-import { createProductDtoSchema, getProductsDtoSchema, restockProductDtoSchema } from '../dtos';
+import {
+	CreateProductCommand,
+	RestockProductCommand,
+	RestockProductProductNotFoundError,
+	SellProductCommand,
+	SellProductNotEnoughStockError,
+	SellProductProductNotFoundError,
+} from '../commands';
+import { createProductDtoSchema, getProductsDtoSchema, restockProductDtoSchema, sellProductDtoSchema } from '../dtos';
 import { GetProductsQuery } from '../queries';
 import { HttpError } from '../types';
 
@@ -64,6 +71,42 @@ export const productsController = {
 			.catch((error) => {
 				if (error instanceof RestockProductProductNotFoundError) {
 					throw new HttpError(404, 'Product not found');
+				}
+
+				throw error;
+			});
+
+		res.json({
+			newStock,
+		});
+	},
+
+	postProductSell: async (req: Request, res: Response) => {
+		const { productId } = req.params;
+		if (!productId) {
+			throw new Error('Missing productId');
+		}
+
+		const result = sellProductDtoSchema.safeParse(req.body);
+		if (!result.success) {
+			throw new HttpError(400, 'Invalid request body', result.error.issues);
+		}
+
+		const { quantity } = result.data;
+		const newStock = await req.context.commandBus
+			.execute(
+				new SellProductCommand({
+					productId,
+					quantity,
+				})
+			)
+			.catch((error) => {
+				if (error instanceof SellProductProductNotFoundError) {
+					throw new HttpError(404, 'Product not found');
+				}
+
+				if (error instanceof SellProductNotEnoughStockError) {
+					throw new HttpError(400, 'Not enough stock');
 				}
 
 				throw error;
