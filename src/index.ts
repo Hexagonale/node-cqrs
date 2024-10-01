@@ -65,6 +65,7 @@ const appFactory = async (config: Config, mongoClient: MongoClient, database: Db
 
 const main = async () => {
 	const config = configFactory();
+	logger.info('Configuration loaded');
 
 	const mongoClient = await MongoClient.connect(config.mongoUrl);
 	const database = mongoClient.db(config.mongoDb);
