@@ -1,0 +1,56 @@
+name: node-cqrs
+
+services:
+  mongodb:
+    image: mongo:7.0.14-jammy
+    container_name: mongodb
+    command: ['--replSet', 'rs0', '--bind_ip_all', '--port', '27017']
+    volumes:
+      - mongodb_data:/data/db
+    mem_limit: 512M
+    cpu_count: 1
+  mongo_setup:
+    image: mongo:7.0.14-jammy
+    container_name: mongo_setup
+    command: sh -c 'sleep 5 && mongosh --host mongodb:27017 --eval "$$MONGO_INIT"'
+    environment:
+      MONGO_INIT: >
+        rs.initiate({
+          _id: "rs0",
+          members: [
+            { _id: 0, host: "mongodb:27017" }
+          ]
+        })
+    depends_on:
+      - mongodb
+    restart: 'no'
+
+  service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'
+    develop:
+      watch:
+        - action: sync
+          path: build
+          target: /usr/src/app/build
+        - action: rebuild
+          path: package.json
+          target: /usr/src/app/src/package.json
+    command:
+      - npx
+      - nodemon
+      - build/index.js
+    mem_limit: 256M
+    cpu_count: 1
+    volumes:
+      - ./openapi.yaml:/usr/src/app/openapi.yaml:ro
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:

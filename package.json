@@ -1,0 +1,40 @@
+{
+  "name": "node-cqrs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "build:watch": "tsc --watch",
+    "lint": "eslint src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.4",
+    "@types/swagger-ui-express": "^4.1.6",
+    "eslint": "^9.11.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.7",
+    "pino-pretty": "^11.2.2",
+    "prettier": "^3.3.3",
+    "typescript": "5.5.4",
+    "typescript-eslint": "^8.7.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "mongodb": "^6.9.0",
+    "path": "^0.12.7",
+    "pino": "^9.4.0",
+    "source-map-support": "^0.5.21",
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.5.1",
+    "zod": "^3.23.8"
+  }
+}
