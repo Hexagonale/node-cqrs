@@ -19,7 +19,7 @@ The app is containerized using Docker.
 
 App uses the environment variables for the configuration.
 
-> [!INFO]
+> [!TIP]
 > You can use the `.env.example` file as a template for the `.env` file.
 
 | Variable Name      | Description                    | Type                | Default Value |
